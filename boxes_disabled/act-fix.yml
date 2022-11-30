@@ -1,0 +1,58 @@
+apiVersion: th2.exactpro.com/v2
+kind: Th2Box
+metadata:
+  name: act-fix
+spec:
+  imageName: ghcr.io/th2-net/th2-act-template-j
+  imageVersion: 3.3.0
+  type: th2-act
+  extendedSettings:
+    envVariables:
+      JAVA_TOOL_OPTIONS: '-XX:+ExitOnOutOfMemoryError'
+    resources:
+      limits:
+        cpu: 200m
+        memory: 200Mi
+    service:
+      enabled: true
+      nodePort:
+        - name: grpc
+          exposedPort: 31988
+  pins:
+    mq:
+      subscribers:
+        - name: from_codec
+          attributes:
+            - first
+            - oe
+            - subscribe
+            - parsed
+      publishers:
+        - name: to_send_demo-conn1
+          attributes:
+            - publish
+            - parsed
+          filters:
+            - metadata:
+                - expectedValue: demo-conn1
+                  fieldName: session_alias
+                  operation: EQUAL
+        - name: to_send_demo-conn2
+          attributes:
+            - publish
+            - parsed
+          filters:
+            - metadata:
+                - expectedValue: demo-conn2
+                  fieldName: session_alias
+                  operation: EQUAL
+    grpc:
+      client:
+        - name: to_check1
+          serviceClass: PLEASE SPECIFY SERVICE CLASS
+        - name: to_script
+          serviceClass: PLEASE SPECIFY SERVICE CLASS
+      server:
+        - name: server
+          serviceClasses:
+            - PLEASE SPECIFY SERVICE CLASSES

@@ -1,0 +1,67 @@
+apiVersion: th2.exactpro.com/v2
+kind: Th2Box
+metadata:
+  name: sim-demo
+spec:
+  imageName: ghcr.io/th2-net/th2-sim-template
+  imageVersion: 2.2.0
+  type: th2-sim
+  customConfig:
+    defaultRules:
+      - methodName: createDemoRule
+        enable: true
+        settings:
+          connection_id:
+            session_alias: fix-demo-server1
+      - methodName: createDemoRule
+        enable: true
+        settings:
+          connection_id:
+            session_alias: fix-demo-server2
+      - methodName: createRuleFixSecurity
+        enable: true
+        settings:
+          connection_id:
+            session_alias: fix-demo-server1
+  extendedSettings:
+    envVariables:
+      JAVA_TOOL_OPTIONS: '-XX:+ExitOnOutOfMemoryError'
+    resources:
+      limits:
+        cpu: 200m
+        memory: 201Mi
+    service:
+      enabled: false
+  pins:
+    mq:
+      subscribers:
+        - name: subscribe
+          attributes:
+            - first
+            - subscribe
+            - parsed
+      publishers:
+        - name: send1
+          attributes:
+            - second
+            - publish
+            - parsed
+            - fix-demo-server1
+        - name: send2
+          attributes:
+            - second
+            - publish
+            - parsed
+            - fix-demo-server2
+        - name: send3
+          attributes:
+            - second
+            - publish
+            - parsed
+            - dc-demo-server1
+        - name: send4
+          attributes:
+            - second
+            - publish
+            - parsed
+            - dc-demo-server2
